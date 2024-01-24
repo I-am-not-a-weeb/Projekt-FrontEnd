@@ -4,8 +4,8 @@ import { createContext } from "react";
 
 const light_theme = {
   color1: '#86B6F6',
-  color2: '#EEF5FF',
-  color3: '#B4D4FF',
+  color2: '#B4D4FF',
+  color3: '#EEF5FF',
   color4: '#CAEDFF',
 };
   

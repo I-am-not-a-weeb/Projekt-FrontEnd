@@ -1,4 +1,6 @@
-import React, { useEffect, useReducer, useState } from 'react';
+import React, { useEffect, useReducer, useState, useContext } from 'react';
+
+import { ThemeContext } from '../contexts/theme';
 
 const initialState = {
     nickname: '',
@@ -26,22 +28,29 @@ const reducer = (state, action) => {
 };
 
 const MeComponent = () => {
+    const [account, setAccount] = useState({});
+
     const [state, dispatch] = useReducer(reducer, initialState);
     const [editedNickname, setEditedNickname] = useState('');
     const [editedEmail, setEditedEmail] = useState('');
     const [editedAvatar, setEditedAvatar] = useState('');
 
+    const theme = useContext(ThemeContext);
+
     useEffect(() => {
-        // Fetch nickname, email, and avatar from API
-        fetch('http://localhost:7475/preferences', {
+        fetch(`http://localhost:7475/account/${localStorage.getItem('username')}`, {
             method: 'GET',
             credentials: 'include',
-        })  .then((response) => response.json())
-            .then((data) => {
+        })  .then((response) => 
+            response.json()
+        
+        )  .then((data) => {
+                //console.log("data"+data)
                 dispatch({ type: 'SET_NICKNAME', payload: data.nickname });
                 dispatch({ type: 'SET_EMAIL', payload: data.email });
                 dispatch({ type: 'SET_AVATAR', payload: data.avatar });
                 dispatch({ type: 'SET_AVATARTYPE', payload: data.avatarType });
+                setAccount(data);
             })
             .catch((error) => {
                 console.error('Error fetching data:', error);
@@ -59,14 +68,12 @@ const MeComponent = () => {
         dispatch({ type: 'SET_NICKNAME', payload: editedNickname });
         dispatch({ type: 'SET_EMAIL', payload: editedEmail });
 
-        // Check if avatar is uploaded and its file type is PNG or JPG
         if (editedAvatar && (editedAvatar.type === 'image/png' || editedAvatar.type === 'image/jpeg')) {
             const reader = new FileReader();
             reader.onloadend = () => {
                 const base64String = reader.result.split(',')[1];
                 setEditedAvatar(base64String);
 
-                // Send changes using fetch PATCH
                 fetch('http://localhost:7475/preferences', {
                     method: 'PATCH',
                     headers: {
@@ -78,18 +85,17 @@ const MeComponent = () => {
                         avatar: base64String,
                     }),
                     credentials: 'include',
+                })  
+                .then((response) => response.json())
+                .then((data) => {
+                        
                 })
-                    .then((response) => response.json())
-                    .then((data) => {
-                        // Handle response data if needed
-                    })
-                    .catch((error) => {
-                        console.error('Error applying changes:', error);
-                    });
+                .catch((error) => {
+                    console.error('Error applying changes:', error);
+                });
             };
             reader.readAsDataURL(editedAvatar);
         } else {
-            // Send changes using fetch PATCH without avatar
             fetch('http://localhost:7475/preferences', {
                 method: 'PATCH',
                 headers: {
@@ -103,7 +109,7 @@ const MeComponent = () => {
             })
                 .then((response) => response.json())
                 .then((data) => {
-                    // Handle response data if needed
+
                 })
                 .catch((error) => {
                     console.error('Error applying changes:', error);
@@ -119,46 +125,48 @@ const MeComponent = () => {
     };
 
     return (
-        <div>
-            <div>
-                Avatar: {state.isEditing ? (
-                    <input
-                        type="file"
-                        accept="image/png, image/jpeg"
-                        onChange={handleAvatarUpload}
-                    />
-                ) : (
-                    <img src={`data:image;base64,${state.avatar}`} alt="Avatar" />
+        <div className='flex flex-col' >
+            <div className='my-4 p-2 ml-4' style={{backgroundColor:theme.color4}}>
+                <div>
+                    Avatar: {state.isEditing ? (
+                        <input
+                            type="file"
+                            accept="image/png, image/jpeg"
+                            onChange={handleAvatarUpload}
+                        />
+                    ) : (
+                        <img src={`data:image/${account.image_type};base64,${account.avatar}`} style={{width:'100px',height:'100px'}}/>
+                    )}
+                </div>
+                <div>
+                    Nickname: {state.isEditing ? (
+                        <input
+                            type="text"
+                            value={editedNickname}
+                            onChange={(e) => setEditedNickname(e.target.value)}
+                        />
+                    ) : (
+                        state.nickname
+                    )}
+                </div>
+                <div>
+                    Email: {state.isEditing ? (
+                        <input
+                            type="text"
+                            value={editedEmail}
+                            onChange={(e) => setEditedEmail(e.target.value)}
+                        />
+                    ) : (
+                        state.email
+                    )}
+                </div>
+                <button onClick={handleEditClick}>
+                    {state.isEditing ? 'Cancel' : 'Edit'}
+                </button>
+                {state.isEditing && (
+                    <button onClick={handleApplyChanges}>Apply Changes</button>
                 )}
             </div>
-            <div>
-                Nickname: {state.isEditing ? (
-                    <input
-                        type="text"
-                        value={editedNickname}
-                        onChange={(e) => setEditedNickname(e.target.value)}
-                    />
-                ) : (
-                    state.nickname
-                )}
-            </div>
-            <div>
-                Email: {state.isEditing ? (
-                    <input
-                        type="text"
-                        value={editedEmail}
-                        onChange={(e) => setEditedEmail(e.target.value)}
-                    />
-                ) : (
-                    state.email
-                )}
-            </div>
-            <button onClick={handleEditClick}>
-                {state.isEditing ? 'Cancel' : 'Edit'}
-            </button>
-            {state.isEditing && (
-                <button onClick={handleApplyChanges}>Apply Changes</button>
-            )}
         </div>
     );
 };

@@ -8,8 +8,9 @@ import { light_theme, dark_theme,ThemeContext } from './contexts/theme';
 import HomePage from './pages/Home_Page';
 import LoginPage from './pages/Login_Page';
 import NotFoundPage from './pages/NotFound_Page';
-import  AccountPage  from './pages/Account_Page';
+import AccountPage  from './pages/Account_Page';
 import SignupPage from './pages/Signup_Page';
+
 
 const SessionContext = createContext(0);
 
@@ -65,7 +66,7 @@ function App() {
               </HoverableButton>
             </div>
             <div style={{height:'100%'}}>
-              <HoverableButton style={{display: 'inline-flex', alignItems:'center' }} className={(theme === dark_theme ? 'text-slate-200' : 'text-slate-700')+' align-middle px-2 h-full text-center'}>
+              <HoverableButton theme={theme} onClick={()=> navigate(`/account/${localStorage.getItem('username')}`)}>
                 MY account
               </HoverableButton>
               <button className={theme === light_theme ? 'bg-slate-600 text-slate-200' : 'bg-slate-200 text-slate-700'} onClick={changeTheme}>
@@ -73,20 +74,27 @@ function App() {
               </button>
             </div>
           </nav>
-          <div style={{height: '100vh',width:'100%',backgroundColor:theme.color3, paddingLeft:'10%', paddingRight:'10%', paddingTop:'3em'}}>
-            <div>
-              <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/signup" element={<SignupPage />} />
-                <Route path="/account/:username" element={<AccountPage />} />
-                <Route path="*" element={<NotFoundPage />} />
-              </Routes>
-            </div>
-            <div>
-
-            </div>
+          <div 
+            className='flex flex-row space justify-between p-0'
+            style={{
+              height: '100vh',
+              width:'100%',
+              backgroundColor:theme.color3,
+              paddingLeft:'10%',
+              paddingRight:'10%',
+              paddingTop:'3em',
+            }}>
+          <div style={{flex:'1'}} className='mt-4'>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/:page" element={<HomePage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignupPage />} />
+              <Route path="/account/:username" element={<AccountPage />} />
+              <Route path="*" element={<NotFoundPage />} />
+            </Routes>
           </div>
+        </div>
       </ThemeContext.Provider>
     </SessionContext.Provider>
   );

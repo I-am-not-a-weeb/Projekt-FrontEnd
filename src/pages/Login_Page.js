@@ -6,6 +6,8 @@ import { ThemeContext } from "../contexts/theme";
 import { SessionContext } from "../contexts/session";
 import { useNavigate } from 'react-router-dom';
 
+import { HostUrl } from "../contexts/host";
+
 const LoginPage = () => {
     const theme = useContext(ThemeContext);
     const session = useContext(SessionContext);
@@ -24,7 +26,29 @@ const LoginPage = () => {
         onSubmit: values => {
             const {username, password} = values;
 
-            console.log(username,password)
+            const data = {
+                'username':username,
+                'password':password
+            }
+
+            fetch(`${HostUrl}/login`,
+            {
+                method:'POST',
+                credentials:'include',
+                body:JSON.stringify(data),
+                headers:{'Content-Type':'application/json'}
+            }).then(res => {
+                if(res.status === 200 ||res.status === 202 ){
+                    alert('Log-in successful');
+                    localStorage.setItem('username',username);
+                    navigate('/');
+                }
+                else{
+                    alert('Username or password is wrong or does not exist');
+                }
+            }).catch(err => {
+                console.log(err);
+            })
         },
       });
       const handle_signup = () => {
@@ -38,7 +62,7 @@ const LoginPage = () => {
             <input id="username" name="username" type="text" onChange={formik.handleChange} value={formik.values.username} />
 
             <label htmlFor="password">Password</label>
-            <input id="password" name="password" type='test' onChange={formik.handleChange} value={formik.values.password} />
+            <input id="password" name="password" type='password' onChange={formik.handleChange} value={formik.values.password} />
 
             <button className='m-1 border-solid border-gray-600 border-opacity-75 border-2' type="submit">Sign-in</button>
             <button className='m-1 border-solid border-gray-600 border-opacity-75 border-2' onClick={handle_signup}>
