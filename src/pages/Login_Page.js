@@ -56,7 +56,7 @@ const LoginPage = () => {
       }
 
     return (
-      <div style={{height: '100vh',width:'100%',backgroundColor:theme.color2}}>
+      <div style={{height: '100%',width:'100%',backgroundColor:theme.color2}}>
         <form onSubmit={formik.handleSubmit} style={{position:'absolute', top: '50%', left: '50%',transform:'translate(-50%, -50%)',display:'flex',flexDirection:'column',padding:'1em',backgroundColor:theme.color3}}>
             <label htmlFor="username">Username</label>
             <input id="username" name="username" type="text" onChange={formik.handleChange} value={formik.values.username} />

@@ -1,4 +1,5 @@
 import React, { useEffect, useReducer, useState, useContext } from 'react';
+import { useNavigate } from "react-router-dom";
 
 import { ThemeContext } from '../contexts/theme';
 
@@ -37,13 +38,17 @@ const MeComponent = () => {
 
     const theme = useContext(ThemeContext);
 
+    const navigate = useNavigate();
+
     useEffect(() => {
         fetch(`http://localhost:7475/account/${localStorage.getItem('username')}`, {
             method: 'GET',
             credentials: 'include',
         })  .then((response) => 
-            response.json()
-        
+            {
+                if(response.status !== 200) navigate('/login');
+                return response.json()
+            }
         )  .then((data) => {
                 //console.log("data"+data)
                 dispatch({ type: 'SET_NICKNAME', payload: data.nickname });
@@ -128,7 +133,7 @@ const MeComponent = () => {
         <div className='flex flex-col' >
             <div className='my-4 p-2 ml-4' style={{backgroundColor:theme.color4}}>
                 <div>
-                    Avatar: {state.isEditing ? (
+                    {state.isEditing ? (
                         <input
                             type="file"
                             accept="image/png, image/jpeg"
@@ -160,6 +165,9 @@ const MeComponent = () => {
                         state.email
                     )}
                 </div>
+                {
+                    
+                }
                 <button onClick={handleEditClick}>
                     {state.isEditing ? 'Cancel' : 'Edit'}
                 </button>

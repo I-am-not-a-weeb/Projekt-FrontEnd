@@ -14,7 +14,8 @@ function HomePage() {
   const session = useContext(SessionContext);
   const navigate = useNavigate();       
   
-  let {page} = useParams();
+
+  let {page=1} = useParams();
 
   useEffect(() => {
     

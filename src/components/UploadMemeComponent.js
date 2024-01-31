@@ -3,6 +3,7 @@ import { useFormik, Formik, Field, ErrorMessage } from "formik";
 import { useContext } from "react";
 import * as Yup from "yup";
 
+
 import { ThemeContext } from "../contexts/theme";
 
 function UploadMemeComponent() {
@@ -18,7 +19,7 @@ function UploadMemeComponent() {
 
   const formik = useFormik({
     initialValues: {
-      meme: '',
+      //meme: '',
       title: '',
       //tags: []
     },

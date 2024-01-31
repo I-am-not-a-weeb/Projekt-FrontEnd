@@ -120,7 +120,7 @@ const SignupPage = () => {
         }
 
     return (
-      <div style={{height: '100vh',width:'100%',backgroundColor:theme.color2}}>
+      <div style={{height: '100%',width:'100%',backgroundColor:theme.color2}}>
         <form onSubmit={formik.handleSubmit} style={{position:'absolute', top: '50%', left: '50%',transform:'translate(-50%, -50%)',display:'flex',flexDirection:'column',padding:'1em',backgroundColor:theme.color3}}>
             <input id='avatar' name="avatar" accept="image/*" type="file" onChange={handleAvatarUpload } value={formik.values.avatar}/>
             <img style={{maxHeight:'150px',maxWidth:'150px'}} src={avatar}/>

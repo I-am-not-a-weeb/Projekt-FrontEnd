@@ -77,14 +77,15 @@ function App() {
           <div 
             className='flex flex-row space justify-between p-0'
             style={{
-              height: '100vh',
+              height: '100%',
               width:'100%',
               backgroundColor:theme.color3,
               paddingLeft:'10%',
               paddingRight:'10%',
               paddingTop:'3em',
+              minHeight:'100vh'
             }}>
-          <div style={{flex:'1'}} className='mt-4'>
+          <div style={{flex:'1', }} className='pt-4'>
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/:page" element={<HomePage />} />

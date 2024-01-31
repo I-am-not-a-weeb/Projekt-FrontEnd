@@ -53,17 +53,15 @@ function AccountPage() {
         <div className="flex">
             <div className="my-4 mr-4" style={{flex:'0.7',backgroundColor:theme.color4}}>
                 {
-                    accountMemes === 0 ? <div className="self-center">No memes</div> : (accountMemes.length === 0 ? <div className="self-center"> Loading.... </div> : //accountMemes.map((meme) => {
-                            //return (
-                                //<MemeComponent meme={meme}/>
-                                <>
-                                </>
-                            //)
-                       // })
+                    accountMemes === 0 ? <div className="self-center">No memes</div> : (accountMemes.length === 0 ? <div className="self-center"> Loading.... </div> : accountMemes.map((meme) => {
+                            return (
+                                <MemeComponent meme={meme}/>
+                            )
+                        })
                     )
                 }
             </div>
-            <div style={{flex:'0.3',backgroundColor:theme.color4}} className='my-4 py-4 ml-4'>
+            <div style={{flex:'0.3',backgroundColor:theme.color4, height:'10em'}} className='my-4 py-4 ml-4'>
                 <div >
                     <div style={{width:'100%'}}>
                         <img src={`data:image/${account.image_type};base64,${account.avatar}`} style={{width:'100px',height:'100px'}}/>
