@@ -10,7 +10,8 @@ import LoginPage from './pages/Login_Page';
 import NotFoundPage from './pages/NotFound_Page';
 import AccountPage  from './pages/Account_Page';
 import SignupPage from './pages/Signup_Page';
-
+import MemePage from './pages/Meme_Page';
+import RankingPage from './pages/Ranking_Page';
 
 const SessionContext = createContext(0);
 
@@ -92,6 +93,8 @@ function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
               <Route path="/account/:username" element={<AccountPage />} />
+              <Route path="/meme/:id" element={<MemePage />} />
+              <Route path="/ranking" element={<RankingPage />} />
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </div>

@@ -1,12 +1,15 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom';
+import { useContext } from "react";
+import { ThemeContext } from "../contexts/theme";
 
 function MemeComponent(props) {
-
     const meme = props.meme;
     const {title,payload,payload_type,tags,id} = meme;
 
     const navigate = useNavigate();
+
+    const theme = useContext(ThemeContext);
     function handleLike()
     {
         fetch(`http://localhost:7475/meme/${id}/givelike`,
@@ -30,14 +33,14 @@ function MemeComponent(props) {
         navigate(`/meme/${id}`);
     }
     return (
-        <div className="mt-1 mb-1">
+        <div className="mt-1 mb-1 p-2" style={{backgroundColor:theme.color4}}>
             <p>{title}</p>
             <div>
                 {
-                    tags.map((tag) => 
-                    {
-                        return (<span>{tag}</span>)
-                    })  
+                    //tags.map((tag) => 
+                    //{
+                    //    return (<span>{tag}</span>)
+                    //})  
                 }        
             </div>
             <div onClick={handleClickToMemePage}>

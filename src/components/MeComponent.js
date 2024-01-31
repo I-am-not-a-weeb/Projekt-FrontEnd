@@ -92,9 +92,6 @@ const MeComponent = () => {
                     credentials: 'include',
                 })  
                 .then((response) => response.json())
-                .then((data) => {
-                        
-                })
                 .catch((error) => {
                     console.error('Error applying changes:', error);
                 });

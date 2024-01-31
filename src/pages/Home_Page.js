@@ -15,7 +15,7 @@ function HomePage() {
   const navigate = useNavigate();       
   
 
-  let {page=1} = useParams();
+  let {page} = useParams();
 
   useEffect(() => {
     

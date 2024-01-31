@@ -3,15 +3,21 @@ import { useNavigate } from 'react-router-dom';
 import { ThemeContext } from "../contexts/theme";
 import { SessionContext } from "../contexts/session";
 import { useParams } from "react-router-dom";
+import { useFormik } from "formik";
 
 import MemeComponent from "../components/MemeComponent";
+import MeComponent from '../components/MeComponent';
+import { HostUrl } from "../contexts/host";
+import CommentComponent from "../components/CommentComponent";
 
 function MemePage()
 {
     const [meme, setMeme] = useState({});
     const {id} = useParams();
 
-    const [comments, setComments] = useState({});
+    const [comments, setComments] = useState([]);
+    const theme = useContext(ThemeContext);
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetch(`${HostUrl}/meme/${id}`, {    
@@ -29,14 +35,29 @@ function MemePage()
         })
     })
 
+    const formik = useFormik({
+        initialValues: {
+            body:''
+        },
+        onsubmit: values => {
+
+        }
+    })
+
     return(
         <div className="flex">
             <div style={{flex:'0.7'}} className="my-4 flex flex-col">
                 <MemeComponent meme={meme}/>
-                <div className="">
+                <div className="" style={{backgroundColor:theme.color4}}>
+                    <div>
+                        <form on>
+                            <input name="body" type="text" placeholder="Comment" onChange={formik.handleChange} value={formik.values.body}/>
+                            <button type="submit">Submit</button>
+                        </form>
+                    </div>
                     {
                         comments.map((comment) => {
-                            
+                            return <CommentComponent comment={comment}/>
                         })
                     }
                 </div>
@@ -47,3 +68,5 @@ function MemePage()
         </div>
     )
 }
+
+export default MemePage;
