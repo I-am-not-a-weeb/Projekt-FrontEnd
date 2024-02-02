@@ -38,28 +38,22 @@ const MeComponent = () => {
 
     const theme = useContext(ThemeContext);
 
+    const username = localStorage.getItem('username');
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetch(`http://localhost:7475/account/${localStorage.getItem('username')}`, {
-            method: 'GET',
-            credentials: 'include',
-        })  .then((response) => 
-            {
-                if(response.status !== 200) navigate('/login');
-                return response.json()
-            }
-        )  .then((data) => {
-                //console.log("data"+data)
-                dispatch({ type: 'SET_NICKNAME', payload: data.nickname });
-                dispatch({ type: 'SET_EMAIL', payload: data.email });
-                dispatch({ type: 'SET_AVATAR', payload: data.avatar });
-                dispatch({ type: 'SET_AVATARTYPE', payload: data.avatarType });
-                setAccount(data);
-            })
-            .catch((error) => {
-                console.error('Error fetching data:', error);
-            });
+        if(username === null || username === '') {navigate('/login'); return}
+
+        const account = localStorage.getItem('accounts')!== null ? JSON.parse(localStorage.getItem('accounts')).filter(account => account.username === username)[0] : null;
+
+        if(account !== null) 
+        {
+            dispatch({ type: 'SET_NICKNAME', payload: account.nickname });
+            dispatch({ type: 'SET_EMAIL', payload: account.email });
+            dispatch({ type: 'SET_AVATAR', payload: account.avatar });
+            dispatch({ type: 'SET_AVATARTYPE', payload: account.avatarType });
+            setAccount(account);
+        }
     }, []);
 
     const handleEditClick = () => {
@@ -79,43 +73,32 @@ const MeComponent = () => {
                 const base64String = reader.result.split(',')[1];
                 setEditedAvatar(base64String);
 
-                fetch('http://localhost:7475/preferences', {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        nickname: editedNickname,
-                        email: editedEmail,
-                        avatar: base64String,
-                    }),
-                    credentials: 'include',
-                })  
-                .then((response) => response.json())
-                .catch((error) => {
-                    console.error('Error applying changes:', error);
-                });
+        
+                const accounts = JSON.parse(localStorage.getItem('accounts'));
+                const username = localStorage.getItem('username');
+                accounts.forEach((account, index) => {
+                    if (account.username === username) {
+                        accounts[index].nickname = editedNickname;
+                        accounts[index].email = editedEmail;
+                        accounts[index].avatar = base64String;
+                    }
+                })
+
+                localStorage.setItem('accounts', JSON.stringify(accounts));
             };
             reader.readAsDataURL(editedAvatar);
         } else {
-            fetch('http://localhost:7475/preferences', {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    nickname: editedNickname,
-                    email: editedEmail,
-                }),
-                credentials: 'include',
-            })
-                .then((response) => response.json())
-                .then((data) => {
 
-                })
-                .catch((error) => {
-                    console.error('Error applying changes:', error);
-                });
+            const accounts = JSON.parse(localStorage.getItem('accounts'));
+            const username = localStorage.getItem('username');
+            accounts.forEach((account, index) => {
+                if (account.username === username) {
+                    accounts[index].nickname = editedNickname;
+                    accounts[index].email = editedEmail;
+                }
+            })
+
+            localStorage.setItem('accounts', JSON.stringify(accounts));
         }
 
         dispatch({ type: 'TOGGLE_EDITING' });
@@ -126,51 +109,64 @@ const MeComponent = () => {
         setEditedAvatar(file);
     };
 
+    const handleLogout = () => {
+        console.log('logout')
+        localStorage.setItem('username','');
+        navigate('/login');
+    }
+
     return (
         <div className='flex flex-col' >
             <div className='my-4 p-2 ml-4' style={{backgroundColor:theme.color4}}>
-                <div>
-                    {state.isEditing ? (
-                        <input
-                            type="file"
-                            accept="image/png, image/jpeg"
-                            onChange={handleAvatarUpload}
-                        />
-                    ) : (
-                        <img src={`data:image/${account.image_type};base64,${account.avatar}`} style={{width:'100px',height:'100px'}}/>
+                <div >
+                    <div>
+                        {state.isEditing ? (
+                            <input
+                                type="file"
+                                accept="image/png, image/jpeg"
+                                onChange={handleAvatarUpload}
+                            />
+                        ) : (
+                            <img src={`data:image/${account.image_type};base64,${account.avatar}`} style={{width:'100px',height:'100px'}}/>
+                        )}
+                    </div>
+                    <div>
+                        Nickname: {state.isEditing ? (
+                            <input
+                                type="text"
+                                value={editedNickname}
+                                onChange={(e) => setEditedNickname(e.target.value)}
+                            />
+                        ) : (
+                            state.nickname
+                        )}
+                    </div>
+                    <div>
+                        Email: {state.isEditing ? (
+                            <input
+                                type="text"
+                                value={editedEmail}
+                                onChange={(e) => setEditedEmail(e.target.value)}
+                            />
+                        ) : (
+                            state.email
+                        )}
+                    </div>
+                    {
+                        
+                    }
+                    <button onClick={handleEditClick}>
+                        {state.isEditing ? 'Cancel' : 'Edit'}
+                    </button>
+                    {state.isEditing && (
+                        <button onClick={handleApplyChanges}>Apply Changes</button>
                     )}
                 </div>
-                <div>
-                    Nickname: {state.isEditing ? (
-                        <input
-                            type="text"
-                            value={editedNickname}
-                            onChange={(e) => setEditedNickname(e.target.value)}
-                        />
-                    ) : (
-                        state.nickname
-                    )}
+                <div className='flex flex-row-reverse'>
+                    <button onClick={handleLogout}>
+                        Logout
+                    </button>
                 </div>
-                <div>
-                    Email: {state.isEditing ? (
-                        <input
-                            type="text"
-                            value={editedEmail}
-                            onChange={(e) => setEditedEmail(e.target.value)}
-                        />
-                    ) : (
-                        state.email
-                    )}
-                </div>
-                {
-                    
-                }
-                <button onClick={handleEditClick}>
-                    {state.isEditing ? 'Cancel' : 'Edit'}
-                </button>
-                {state.isEditing && (
-                    <button onClick={handleApplyChanges}>Apply Changes</button>
-                )}
             </div>
         </div>
     );

@@ -65,6 +65,9 @@ function App() {
               <HoverableButton theme={theme}  onClick={()=>navigate('/')}>
                 Main Page
               </HoverableButton>
+              <HoverableButton theme={theme} onClick={()=>navigate('/ranking')}>
+                Ranking
+              </HoverableButton>
             </div>
             <div style={{height:'100%'}}>
               <HoverableButton theme={theme} onClick={()=> navigate(`/account/${localStorage.getItem('username')}`)}>

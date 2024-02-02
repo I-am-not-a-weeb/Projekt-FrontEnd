@@ -31,24 +31,19 @@ const LoginPage = () => {
                 'password':password
             }
 
-            fetch(`${HostUrl}/login`,
-            {
-                method:'POST',
-                credentials:'include',
-                body:JSON.stringify(data),
-                headers:{'Content-Type':'application/json'}
-            }).then(res => {
-                if(res.status === 200 ||res.status === 202 ){
-                    alert('Log-in successful');
-                    localStorage.setItem('username',username);
-                    navigate('/');
-                }
-                else{
-                    alert('Username or password is wrong or does not exist');
-                }
-            }).catch(err => {
-                console.log(err);
-            })
+            const accounts = JSON.parse(localStorage.getItem('accounts') !== null ? localStorage.getItem('accounts') : '[]');
+
+            let flag_logged_in = false;
+            accounts.forEach(element => {
+              if(element.username === username && element.password === password){
+                alert('Log-in successful');
+                localStorage.setItem('username',username);
+                navigate('/');
+                flag_logged_in = true;
+              }
+            });
+
+            if(!flag_logged_in) alert('Username or password is wrong or does not exist');
         },
       });
       const handle_signup = () => {

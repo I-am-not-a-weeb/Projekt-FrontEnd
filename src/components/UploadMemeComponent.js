@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useFormik, Formik, Field, ErrorMessage } from "formik";
 import { useContext } from "react";
 import * as Yup from "yup";
+import { v4 as uuidv4 } from 'uuid';
 
 
 import { ThemeContext } from "../contexts/theme";
@@ -12,9 +13,9 @@ function UploadMemeComponent() {
   const [tags, setTags] = useState([]); // ['tag1', 'tag2'
 
   const validationSchema = Yup.object({
-    avatar: Yup.string().required('Avatar is required'),
+    meme: Yup.string().required('Avatar is required'),
     title: Yup.string().required('Title is required'),
-    tags: Yup.array().of(Yup.string()).required('Tags are required'),
+    //tags: Yup.array().of(Yup.string()).required('Tags are required'),
   });
 
   const formik = useFormik({
@@ -23,9 +24,13 @@ function UploadMemeComponent() {
       title: '',
       //tags: []
     },
+    validationSchema: validationSchema,
     onSubmit: values => {
+      console.log('1');
       const { title } = values;
-
+      console.log(12);
+      const username = localStorage.getItem('username');
+      console.log(15);
       const prom =  new Promise((resolve) => {
 
         if(!meme) return alert('Please select a meme');
@@ -41,33 +46,27 @@ function UploadMemeComponent() {
     });
 
     prom.then(({ image, imageType }) => {
-    
-      console.log(tags)
       const data = {
+          'id':uuidv4(),
           'payload':image,
           'payload_type':imageType.split('/')[1],
           'title':title,
-          'tags':tags
+          'tags':tags,
+          'author': username,
+          'comments':[],
+          'who_liked':[],
+          "who_reported":[],
       }
 
-      console.log(data);
 
-      fetch('http://localhost:7475/meme', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-        credentials: 'include',
-      }).then((response) => {
-        if (response.status === 201) {
-          alert('Meme uploaded successfully');
-        } else {
-          alert('Meme upload failed');
-        }
-      }).catch((error) => {
-        console.log(error);
-      })
+      if(localStorage.getItem('memes') === null) localStorage.setItem('memes', JSON.stringify([]));
+
+      if(title.length === 0 ) return alert('Title must be at least 8 characters');
+
+      const memes = JSON.parse(localStorage.getItem('memes'))
+
+      localStorage.setItem('memes', JSON.stringify([...memes,data]));
+
     })
   }});
 
@@ -82,8 +81,7 @@ function UploadMemeComponent() {
     formik.handleChange(e);
   }
   const handleTagAdd = (e) => {
-    setTags([...tags, formik.values.tags]);
-    console.log(tags);
+    setTags([ formik.values.tags,...tags]);
   }
 
   return (

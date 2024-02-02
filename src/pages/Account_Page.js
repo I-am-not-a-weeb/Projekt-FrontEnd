@@ -21,7 +21,21 @@ function AccountPage() {
     const [accountMemes, setAccountMemes] = useState([]);
 
     useEffect(() => {
-        fetch(`${HostUrl}/account/${username}`, {    
+        if(username === null) navigate('/login');
+
+        if(localStorage.getItem('accounts')!== null) 
+        {
+            const accounts = JSON.parse(localStorage.getItem('accounts'));
+            setAccount(accounts.filter(account => account.username === username)[0]);
+        }
+
+        if(localStorage.getItem('memes')!== null) 
+        {
+            const memes = JSON.parse(localStorage.getItem('memes'));
+            setAccountMemes(memes.filter(meme => meme.author === username));
+        }
+
+        /*fetch(`${HostUrl}/account/${username}`, {    
             credentials: 'include',
             method: 'get',
         }).then(response => {
@@ -45,7 +59,7 @@ function AccountPage() {
                 setAccountMemes(data)
          }).catch(error => {
             console.log(error);
-         })
+         })*/
 
     },[]);
 

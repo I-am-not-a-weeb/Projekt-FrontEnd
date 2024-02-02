@@ -74,36 +74,46 @@ const SignupPage = () => {
             });
         
         prom.then(({ image, imageType }) => {
-            
             const data = {
                 'avatar':image,
                 'image_type':imageType.split('/')[1],
                 'username':username,
                 'nickname':nickname,
                 'password':password,
-                'email':email
+                'email':email,
+                'who_liked':[],
+                'who_reported':[],
             }
 
-            console.log(data);
 
-            fetch(`${HostUrl}/signup`,
-            {
-                method:'POST',
-                credentials:'include',
-                body:JSON.stringify(data),
-                headers:{'Content-Type':'application/json'}
-            }).then(res => {
-                if(res.status === 201){
-                    alert('Sign-up successful');
-                    navigate('/login');
+            const accounts = JSON.parse(localStorage.getItem('accounts') === null ? '[]' : localStorage.getItem('accounts'));
+
+            let flag_exists = false;
+            accounts.forEach(account => {
+                if(account.username === username)
+                {
+                    alert('Username already exists');
+                    flag_exists = true;
                 }
-                else{
-                    alert('Username or email already exists');
-                }
-            }).catch(err => {
-                console.log(err);
             })
+            
+            console.log(accounts)
+
+            if(!flag_exists)
+            {
+                console.log('tu!')
+
+                const to_add_account = JSON.stringify([...accounts, data]);
+
+                console.log(to_add_account);
+                localStorage.setItem('accounts', to_add_account);
+                alert('Sign-up successful');
+                navigate('/login');
+            }
+
         })
+
+
         }
       });
 

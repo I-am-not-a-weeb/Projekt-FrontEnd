@@ -26,14 +26,11 @@ function HomePage() {
   return (
     <div className="flex">
       <div style={{flex:'0.7'}} className="my-4 flex flex-col">
-        <UploadMemeComponent/>
-        <FeedComponent/>
+        <FeedComponent />
       </div>
       <div style={{flex:'0.3'}} >
-            <MeComponent/>
+        <MeComponent/>
       </div>
     </div>
   );
 }
-
-export default HomePage;

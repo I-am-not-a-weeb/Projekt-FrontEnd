@@ -15,23 +15,10 @@ function FeedComponent(props) {
 
     const [feed,setFeed] = useState([])
 
-    const page = props.page;
 
     useEffect(() => {
-        console.log('page: '+page)
-        fetch(`${HostUrl}/feed/${page}`,
-            {
-                method: 'GET',
-                credentials: 'include',
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-                setFeed(data);
-            })
-            .catch(error => {
-                console.error(error);
-            });
+        localStorage.getItem('memes')!== null ? setFeed(JSON.parse(localStorage.getItem('memes'))) : setFeed([]);
+
     }, []);
 
     const formik = useFormik({
@@ -50,29 +37,36 @@ function FeedComponent(props) {
 
             console.log(query);
 
-            fetch(`${HostUrl}/search/${query}`,{
-                method:'GET',
-                credentials:'include',
-            }).then(res => {
-                if(res.status === 200){
-                    return res.json();
+            const memes = JSON.parse(localStorage.getItem('memes'));
+
+
+            const feed_memes = memes.filter((meme) =>{
+                if(tag !== '' && searchbar !== '')
+                {
+                    return meme.tags.includes(tag) && meme.title.includes(searchbar);
                 }
-                else{
-                    alert('Error in searching');
+                else if(tag !== '')
+                {
+                    return meme.tags.includes(tag);
                 }
-            }).then(data => {
-                setFeed(data);
+                else if(searchbar !== '')
+                {
+                    return meme.title.includes(searchbar);
+                }
+                else
+                {
+                    return true;
+                }
             })
-            .catch(err => {
-                console.log(err);
-            })
+            setFeed(feed_memes);
+
         }
     })
 
     return (
         <div  className="my-4 py-4 mr-4">
             <div  className='p-2' style={{backgroundColor:theme.color4}}>
-                <form onSubmit={formik.onSubmit} className='flex justify-evenly'>
+                <form onSubmit={formik.handleSubmit} className='flex justify-evenly'>
                     <input id='searchbar' name='searchbar' type='text' onChange={formik.handleChange} value={formik.values.searchbar}/>
                     <label htmlFor='tag'>Tag:</label>
                     <input id='tag' name='tag' type='text'onChange={formik.handleChange} value={formik.values.tag}/>
