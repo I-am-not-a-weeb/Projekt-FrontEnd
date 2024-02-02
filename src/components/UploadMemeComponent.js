@@ -63,6 +63,8 @@ function UploadMemeComponent() {
 
       if(title.length === 0 ) return alert('Title must be at least 8 characters');
 
+      console.log(data)
+    
       const memes = JSON.parse(localStorage.getItem('memes'))
 
       localStorage.setItem('memes', JSON.stringify([...memes,data]));
@@ -90,7 +92,7 @@ function UploadMemeComponent() {
               <input
                 id="meme"
                 type="file"
-                accept="image/*"
+                accept="image/*, video/*"
                 onChange={handleMemeChange}
                 value={formik.values.meme}
               />

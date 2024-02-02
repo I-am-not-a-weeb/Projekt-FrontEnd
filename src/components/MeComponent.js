@@ -123,7 +123,7 @@ const MeComponent = () => {
                         {state.isEditing ? (
                             <input
                                 type="file"
-                                accept="image/png, image/jpeg"
+                                accept="image/*"
                                 onChange={handleAvatarUpload}
                             />
                         ) : (
